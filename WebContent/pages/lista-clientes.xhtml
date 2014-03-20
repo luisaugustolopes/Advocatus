@@ -1,0 +1,245 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition template="/WEB-INF/templates/template-menu.xhtml" 
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"	
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:o="http://omnifaces.org/ui"
+	xmlns:of="http://omnifaces.org/functions">
+
+<ui:define name="head">
+	<title>Advocatus - Clientes</title>
+</ui:define>
+
+
+<ui:define name="body">
+
+	<!--***************************
+		Form Principal 
+	****************************-->
+	<h:form id="formPrincipal">
+
+		<h:messages id="msgPrincipal"/>
+		<p:dataTable id="gridClientes" var="clientes"
+			value="#{pessoaBean.findAll()}" filteredValue="#{pessoaBean.pessoas}"
+			rowsPerPageTemplate="10,30,50" rowKey="#{clientes.id}" rows="10"
+			paginator="true">
+
+			<f:facet name="header">Clientes
+			
+				<div align="left">
+					<p:commandButton value="Cadastrar" id="cadastrar" action="#{pessoaBean.novoCliente}" />					
+					<h:commandLink>
+						<p:graphicImage library="default" name="img/pdf_16x16.png" title="PDF" />
+						<p:dataExporter target="gridClientes" type="pdf" fileName="clientes" />
+					</h:commandLink>
+					<h:commandLink>
+						<p:graphicImage library="default" name="img/excel-icon.png" title="Excel" />
+						<p:dataExporter target="gridClientes" type="xls" fileName="clientes" />
+					</h:commandLink>
+										
+				</div>
+			</f:facet>
+
+			<p:column headerText="ID" filterBy="id" sortBy="id">
+				<h:outputText value="#{clientes.id}" />
+			</p:column>
+
+			<p:column headerText="Nome" filterBy="nome" sortBy="nome">
+				<h:outputLabel value="#{clientes.nome}" />
+			</p:column>
+
+			<p:column headerText="Tipo">
+				<h:outputLabel value="#{clientes.tipo}" />
+			</p:column>
+
+			<p:column headerText="CPF/CNPJ"
+				filterBy="#{clientes.tipo == 'Física'?clientes.cpf:clientes.cnpj}">
+				<h:outputLabel
+					value="#{clientes.tipo == 'Física'?clientes.cpf:clientes.cnpj}" />
+			</p:column>
+
+
+			<p:column headerText="Sexo">
+				<h:outputLabel value="#{clientes.tipo == 'Física'?clientes.sexo:''}" />
+			</p:column>
+
+			<p:column headerText="E-mail" filterBy="email">
+				<h:outputLabel value="#{clientes.email}" />
+			</p:column>
+
+			<p:column>
+				<h:link styleClass="ui-icon ui-icon-pencil" value="editar 1" outcome="novo-cliente">
+					<f:param name="idPessoa" value="#{clientes.id}" />
+				</h:link>
+				<h:commandLink title="Alterar" rendered="#{clientes.tipo == 'Física'}"
+					action="novo-cliente?faces-redirect=true&amp;includeViewParams=true"											
+					styleClass="ui-icon ui-icon-pencil">
+					<f:setPropertyActionListener target="#{pessoaBean.fisica}" value="#{clientes}"></f:setPropertyActionListener>				
+				</h:commandLink>
+				<h:commandLink title="Alterar" rendered="#{clientes.tipo == 'Jurídica'}"
+					action="novo-cliente?faces-redirect=true&amp;includeViewParams=true"											
+					styleClass="ui-icon ui-icon-pencil">
+					<f:setPropertyActionListener target="#{pessoaBean.juridica}" value="#{clientes}"></f:setPropertyActionListener>				
+				</h:commandLink>
+			</p:column>
+			
+			<ui:remove>
+			<!-- AÇÕES PARA EDITAR NA PRÓPRIA PÁGINA -->
+			<p:column style="width:2%">
+				<p:commandLink title="Alterar" update=":Alterar"
+					action="#{pessoaBean.setPessoaFisicaJuridica(clientes)}"
+					oncomplete="dialogAlterar.show();" immediate="true"						
+					styleClass="ui-icon ui-icon-pencil" />
+			</p:column>
+			<p:column style="width:2%">
+				<p:commandLink title="Excluir" update=":Excluir"
+					action="#{pessoaBean.setPessoaFisicaJuridica(clientes)}"
+					oncomplete="dialogExcluir.show();" immediate="true"
+					styleClass="ui-icon ui-icon-circle-close" />
+			</p:column>
+			</ui:remove>
+
+			<f:facet name="footer">
+	            Total de registros: #{fn:length(pessoaBean.pessoas)}  
+	        </f:facet>
+
+		
+		</p:dataTable>
+		
+		
+	</h:form>
+	
+	
+	
+	
+	<!-- ******************** REMOVIDO ********************-->
+	
+	
+	
+	<ui:remove>
+	<!--******************************* 
+		Editar Pessoa
+	*******************************-->
+	<p:dialog header="Alterar" widgetVar="dialogAlterar"  id="Alterar" closeOnEscape="true" style="width:220px">
+		<h:form id="formAlterar" binding="#{pessoaBean.form}">
+
+		<p:tabView>
+
+		<p:tab title="Dados Pessoais">
+		<p:panelGrid id="panelAlterarPF" columns="2" rendered="#{pessoaBean.isPessoaFisica()}">
+  	
+            <h:outputText value="Nome:"/>
+            <p:inputText id="nome" value="#{pessoaBean.fisica.nome}" size="60" required="true" requiredMessage="Informe o Nome"/>
+           	
+           	<h:outputText value="Sexo:" />
+			<p:selectOneRadio value="#{pessoaBean.fisica.sexo}">
+               	<f:selectItem itemLabel="Masculino" itemValue="M"/>
+               	<f:selectItem itemLabel="Feminino" itemValue="F"/>
+               </p:selectOneRadio>
+			
+			<h:outputText value="E-mail:" />
+               <p:inputText value="#{pessoaBean.fisica.email}" size="60"/>
+               
+               
+               <h:outputText value="CPF:"/>
+			<h:panelGroup>
+			
+			<p:inputMask mask="999.999.999-99" id="cpf"  value="#{pessoaBean.fisica.cpf}" required="true" requiredMessage="Informe o CPF" validator="#{pessoaBean.validate}">
+				<p:ajax update="@form" event="blur"/>
+			</p:inputMask>
+			
+			</h:panelGroup>
+               
+        </p:panelGrid>
+
+
+
+		<p:panelGrid id="panelAlterarPJ" columns="2" rendered="#{pessoaBean.isPessoaJuridica()}">
+			<h:outputText value="Nome:" />
+			<p:inputText value="#{pessoaBean.juridica.nome}" size="60" required="true" requiredMessage="Informe o Nome"/>
+			
+			<h:outputText value="E-mail:" />
+			<p:inputText value="#{pessoaBean.juridica.email}" />
+			
+			<h:outputText value="CNPJ:"/>
+			<p:inputMask mask="99.999.999/9999-99" value="#{pessoaBean.juridica.cnpj}" />
+	    </p:panelGrid>
+		
+		</p:tab>
+		
+		<br/>
+		
+		
+		
+		
+		</p:tabView>
+
+        <div align="center">        
+        	<p:commandButton value="Alterar" id="btnAlterar"
+                actionListener="#{pessoaBean.alterar}"	       
+  				update=":formPrincipal:gridClientes, msgEdit"
+                oncomplete="hideDialog(args,dialogAlterar)"/>
+                
+        </div>
+        <h:messages id="msgEdit"/>
+
+		</h:form>
+	</p:dialog>
+	
+
+	
+	<!--******************************* 
+		Excluir Pessoa
+	*******************************-->
+	<p:confirmDialog id="Excluir"  
+			message="Confirma a exclusão #{pessoaBean.nome} ?"			
+	        header="Excluir"
+	        severity="alert"
+	        widgetVar="dialogExcluir"
+	        closeOnEscape="true" 
+	        appendTo="@(body)">
+	        
+		    <p:commandButton id="confirm" value="Sim"			    		
+	                oncomplete="dialogExcluir.hide()"
+	                update=":formPrincipal:gridClientes,:formPrincipal:msgPrincipal"
+	                actionListener="#{pessoaBean.deletar}"
+	                styleClass="ui-confirmdialog-yes"/>
+	                
+	        <p:commandButton id="decline" value="Não"
+	                onclick="dialogExcluir.hide()" 
+	                styleClass="ui-confirmdialog-no"/>
+	                
+	</p:confirmDialog>
+	
+	
+	
+	<!--******************************* 
+		Excluir Telefone
+	*******************************-->
+	<p:confirmDialog id="ExcluirTelefone"  
+			message="Confirma a exclusão #{pessoaBean.telefone} ?"			
+	        header="Excluir"
+	        severity="alert"
+	        widgetVar="dialogExcluirTelefone"
+	        closeOnEscape="true"
+	        appendTo="@(body)">
+	        
+		    <p:commandButton value="Sim"			    		
+	                oncomplete="dialogExcluirTelefone.hide()"
+	                update=":formPrincipal:gridClientes,:formPrincipal:msgPrincipal"
+	                actionListener="#{pessoaBean.deletar}"
+	                styleClass="ui-confirmdialog-yes"/>
+	                
+	        <p:commandButton id="decline" value="Não"
+	                onclick="dialogExcluir.hide()" 
+	                styleClass="ui-confirmdialog-no"/>
+	                
+	</p:confirmDialog>
+	</ui:remove>
+	
+</ui:define>
+</ui:composition>

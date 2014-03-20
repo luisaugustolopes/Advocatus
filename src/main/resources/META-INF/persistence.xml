@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence version="2.0"
+	xmlns="http://java.sun.com/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd">
+
+	<persistence-unit name="default" transaction-type="RESOURCE_LOCAL">
+	<provider>org.hibernate.ejb.HibernatePersistence</provider>
+	
+		<class>br.com.lopes.model.Pessoa</class>
+		<class>br.com.lopes.model.Endereco</class>
+		<class>br.com.lopes.model.Cidade</class>
+		<class>br.com.lopes.model.Usuario</class>
+		<class>br.com.lopes.model.PessoaFisica</class>
+		<class>br.com.lopes.model.PessoaJuridica</class>
+		<class>br.com.lopes.model.Advogado</class>
+		<class>br.com.lopes.model.EscritorioAdvocacia</class>
+		<class>br.com.lopes.model.ProcessoJuridico</class>
+		<class>br.com.lopes.model.Telefone</class>
+		<properties>
+
+			<!-- Oracle XE -->
+			<property name="javax.persistence.jdbc.url" value="jdbc:oracle:thin:@localhost:1521:XE" />
+			<property name="javax.persistence.jdbc.user" value="ADVOCATUS" />
+			<property name="javax.persistence.jdbc.password" value="liberada" />
+			<property name="javax.persistence.jdbc.driver" value="oracle.jdbc.OracleDriver" />
+			<property name="hibernate.dialect" value="org.hibernate.dialect.Oracle8iDialect" />
+			
+			<property name="hibernate.hbm2ddl.auto" value="none" />
+			<property name="hibernate.show_sql" value="true" />
+			<property name="hibernate.format_sql" value="true" />
+			<property name="hibernate.use_sql_comments" value="true"/>
+			
+			<!-- configuration pool via c3p0-->
+			<property name="hibernate.c3p0.acquireIncrement" value="1"/>   
+			<property name="hibernate.c3p0.minPoolSize" value="3"/>
+			<property name="hibernate.c3p0.initialPoolSize" value="3"/>
+			<property name="hibernate.c3p0.maxPoolSize" value="20"/>
+			<property name="hibernate.c3p0.maxStatements" value="0"/>
+			<property name="hibernate.c3p0.maxIdleTime" value="0"/> 
+			
+		</properties>
+
+	</persistence-unit>
+
+</persistence>

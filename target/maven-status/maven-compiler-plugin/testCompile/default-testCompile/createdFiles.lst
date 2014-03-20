@@ -1,0 +1,5 @@
+br\com\lopes\selenium\LoginTestCase.class
+br\com\lopes\selenium\DefaultTest.class
+br\com\lopes\selenium\InsertPessoaTestCase.class
+br\com\lopes\model\TelefoneTest.class
+br\com\lopes\model\PessoaTest.class

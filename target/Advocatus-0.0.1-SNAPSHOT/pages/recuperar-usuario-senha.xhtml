@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition template="/WEB-INF/templates/template.xhtml" 
+    xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+<ui:define name="head">
+	<title>Advocatus - Recuperar senha</title>
+</ui:define>
+
+
+<ui:define name="body" >
+	<p:dialog header="Recuperar senha" visible="true" closable="false" draggable="false" resizable="false" width="420">
+		<h:form>
+			<h:panelGrid columns="1">
+			<h:outputLabel for="email" value="Informe seu e-mail"></h:outputLabel>
+			<h:inputText id="email" value="#{usuarioBean.usuario.email}"></h:inputText>
+			<h:commandButton value="Enviar" action="#{usuarioBean.recuperarSenha(usuarioBean.usuario)}"></h:commandButton>
+			</h:panelGrid>
+		</h:form>
+		<h:messages/>
+		<h:link value="Retornar" outcome="login.xhtml"/>		
+	</p:dialog>
+</ui:define>
+</ui:composition>
