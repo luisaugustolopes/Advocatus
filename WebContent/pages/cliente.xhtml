@@ -184,6 +184,9 @@
 				<h:messages id="msgs" />
 		</h:form>
 
+</ui:define>
+
+<ui:define name="dialogs">
 <!--******************************* 
 	Excluir Pessoa
 ***********************************-->
@@ -192,8 +195,7 @@
         header="Excluir"
         severity="alert"
         widgetVar="dialogExcluirPessoa"
-        closeOnEscape="true"
-        appendTo="@(body)">
+        closeOnEscape="true">
         
 	    <p:commandButton value="Sim"
                 oncomplete="dialogExcluirPessoa.hide()"                
@@ -215,8 +217,7 @@
         header="Excluir"
         severity="alert"
         widgetVar="dialogExcluirTelefone"
-        closeOnEscape="true"
-        appendTo="@(body)">
+        closeOnEscape="true">
         
 	    <p:commandButton value="Sim" immediate="true"
                 oncomplete="dialogExcluirTelefone.hide()"
