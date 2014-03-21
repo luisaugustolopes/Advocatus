@@ -1,6 +1,6 @@
 /**
  * 
- */
+ 
 function handleSubmitRequest(xhr, status, args, dialogName, formName) {
 	dialog = jQuery('#' + dialogName);
 	if (args.validationFailed) {
@@ -27,4 +27,4 @@ function hideDialog(args, dialogName) {
 	}
 }
 
-
+*/
