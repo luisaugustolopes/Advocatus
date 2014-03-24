@@ -37,25 +37,33 @@ public class GenericDAO<PK, T> {
  
     public void insert(T entity) {
     	try{
+    		log.info("insert "+entity.getClass().getName() +' ' +entity);
     		entityManager = JpaUtils.getEntityManager();
     		entityManager.getTransaction().begin();
     		entityManager.persist(entity);
 	        entityManager.getTransaction().commit();
-    	} catch (PersistenceException e) {
-    		if (entityManager.getTransaction().isActive()){
-    			entityManager.getTransaction().rollback();
-    		}    		
+	        log.info("insert sucessful");
+    	} catch (Exception e) {
+			
+			log.error("Falha ao inserir Class/Entity "+entity.getClass().getName() +'/'+entity + " Error:"+ e.getMessage());
+			if (entityManager.getTransaction().isActive()) {
+				entityManager.getTransaction().rollback();
+			}
+			
 			throw e;
 		}
     }
  
     public void update(T entity) {
     	try{
+    		log.info("update "+entity.getClass().getName() +' ' +entity);
 			entityManager = JpaUtils.getEntityManager();
 			entityManager.getTransaction().begin();
 			entityManager.merge(entity);
 			entityManager.getTransaction().commit();
-		} catch (PersistenceException e) {
+			log.info("update sucessful");
+		} catch (Exception e) {
+			log.error("Falha ao gravar Class/Entity "+entity.getClass().getName() +'/'+entity + " Error:" + e.getMessage());
 			if (entityManager.getTransaction().isActive()) {
 				entityManager.getTransaction().rollback();
 			}
@@ -74,19 +82,13 @@ public class GenericDAO<PK, T> {
 			log.info("delete successful");
 		} catch (Exception e) {
 			
-			log.error("Falha ao deletar "+entity.getClass().getName() +' '+entity);
+			log.error("Falha ao deletar Class/Entity "+entity.getClass().getName() +'/'+entity + " Error:"+ e.getMessage());
 			if (entityManager.getTransaction().isActive()) {
 				entityManager.getTransaction().rollback();
 			}
 			
 			throw e;
-		} finally{
-			if (entityManager.getTransaction().isActive()){
-				entityManager.getTransaction().commit();
-			}
 		}
-		
-        
     }
  
     public List<T> findAll() {

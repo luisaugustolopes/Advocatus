@@ -66,12 +66,13 @@
 		</dependency>
 
 
-		<!-- OMNIFACES -->
+		<!-- OMNIFACES 
 		<dependency>
 			<groupId>org.omnifaces</groupId>
 			<artifactId>omnifaces</artifactId>
 			<version>1.7</version>
 		</dependency>
+		-->
 
 
 		<!-- ORACLE XE -->

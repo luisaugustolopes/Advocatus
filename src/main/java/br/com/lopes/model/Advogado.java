@@ -25,7 +25,7 @@ public class Advogado {
 	@Column
 	private String numeroOAB;
 	
-	@OneToOne(cascade=CascadeType.ALL)
+	@OneToOne
 	@ForeignKey(name="FK_ADVOGADO_PESSOA")
 	private PessoaFisica fisica;
 	

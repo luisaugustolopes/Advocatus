@@ -44,7 +44,7 @@ public class Usuario{
 	@Column(nullable=false, updatable=false)
 	private Calendar dataCriacao;
 
-	@OneToOne(mappedBy="usuario", cascade=CascadeType.ALL)
+	@OneToOne(mappedBy="usuario")
 	private Pessoa pessoa;
 	
 	public long getId() {

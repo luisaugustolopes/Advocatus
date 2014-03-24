@@ -26,7 +26,7 @@ public class PessoaFisica extends Pessoa {
 
 	
 	//Relacionamentos
-	@OneToOne(mappedBy="fisica",cascade=CascadeType.ALL)
+	@OneToOne(mappedBy="fisica")
 	private Advogado advogado;
 	
 	

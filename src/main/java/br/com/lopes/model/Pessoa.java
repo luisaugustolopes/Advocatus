@@ -44,11 +44,11 @@ public abstract class Pessoa {
 	protected List<Endereco> enderecos;
 	
 	@ForeignKey(name="FK_PESSOA_USUARIO")
-	@OneToOne(cascade=CascadeType.ALL)
+	@OneToOne
 	protected Usuario usuario;
 	
 	
-	@OneToMany(mappedBy="pessoa",cascade=CascadeType.ALL)	
+	@OneToMany(mappedBy="pessoa",cascade=CascadeType.REMOVE)
 	private List<Telefone> telefones;
 	
 	
@@ -99,7 +99,7 @@ public abstract class Pessoa {
 		this.usuario = usuario;
 	}
 	
-	public List<Telefone> getTelefones() {
+	public List<Telefone> getTelefones() {		
 		return telefones;
 	}
 

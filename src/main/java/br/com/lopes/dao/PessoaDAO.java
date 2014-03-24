@@ -61,7 +61,7 @@ public class PessoaDAO extends GenericDAO<Long, Pessoa>{
 									.getResultList();
 		manager.close();
 		
-		Logger.getLogger(getClass()).info("Selecionar PF por CPF: [" + cpf + "]:"+!results.isEmpty());
+		Logger.getLogger(getClass()).info("Buscar CPF: [" + cpf + "]:"+!results.isEmpty());
 		
 		if (results.isEmpty()) { return null;}
 		return results.get(0);

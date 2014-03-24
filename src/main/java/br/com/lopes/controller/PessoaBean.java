@@ -5,20 +5,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
-import javax.faces.bean.SessionScoped;
 import javax.faces.bean.ViewScoped;
-import javax.faces.component.UIComponent;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
-import javax.faces.event.ActionEvent;
-import javax.faces.validator.Validator;
-import javax.faces.validator.ValidatorException;
 import javax.persistence.PersistenceException;
-import javax.validation.groups.ConvertGroup;
 
 import org.apache.log4j.Logger;
 
@@ -28,15 +21,13 @@ import br.com.lopes.model.PessoaFisica;
 import br.com.lopes.model.PessoaJuridica;
 import br.com.lopes.model.Telefone;
 import br.com.lopes.util.Exceptions;
-import br.com.lopes.util.FacesUtils;
 
 @ManagedBean(name="pessoaBean")
 @ViewScoped
-public class PessoaBean implements Serializable, Validator{
+public class PessoaBean implements Serializable{
 
 	private static final long serialVersionUID = 1L;
 	
-	private Pessoa pessoa;
 	private PessoaFisica fisica;
 	private PessoaJuridica juridica;	
 	private PessoaDAO pessoaDao;
@@ -45,15 +36,12 @@ public class PessoaBean implements Serializable, Validator{
 	private boolean editarCliente;
 	
 	private char tipoPessoa = 'F'; // Default
-	private String nome;
 	
 	private List<Pessoa> pessoas;
 	
 	@ManagedProperty(value="#{telefoneBean}")
 	private TelefoneBean telefoneBean;
-
-	private UIComponent form;
-
+	
 	private Logger log = Logger.getLogger(getClass());
 
 
@@ -72,19 +60,17 @@ public class PessoaBean implements Serializable, Validator{
 		
 		ExternalContext context = FacesContext.getCurrentInstance().getExternalContext();
 		String idPessoa = context.getRequestParameterMap().get("idPessoa");
+		String paramNovo = context.getRequestParameterMap().get("novo");
 		
-		log.info("init " + idPessoa);
+		novoCliente = Boolean.valueOf(paramNovo);
 	
-		editarCliente = false;
+		editarCliente = (idPessoa != null && !idPessoa.equals(0));
 		
-		if (idPessoa != null && !idPessoa.equals(0)){
-			editarCliente = true;
+		if (editarCliente){			
 			
 			Pessoa pessoa = pessoaDao.getById(Long.parseLong(idPessoa));
 
-			telefoneBean.setTelefones(pessoa.getTelefones());
-			
-			log.info(pessoa.getTelefones());
+			telefoneBean.setTelefones(pessoa.getTelefones());			
 			
 			if (pessoa instanceof PessoaFisica){
 				fisica = (PessoaFisica) pessoa;
@@ -94,7 +80,7 @@ public class PessoaBean implements Serializable, Validator{
 				juridica = (PessoaJuridica) pessoa;
 				setTipoPessoa('J');
 			}
-		}	
+		}
 		
 	}
 	
@@ -117,14 +103,15 @@ public class PessoaBean implements Serializable, Validator{
 		return id;
 	}
 	
-	public Pessoa getPessoa() {
+	public Pessoa getPessoa(){
+		Pessoa pessoa = null;
+		if (isPessoaFisica()){
+			pessoa = (Pessoa)fisica;
+		}else if (isPessoaJuridica()){
+			pessoa = (Pessoa)juridica;
+		}
 		return pessoa;
 	}
-
-	public void setPessoa(Pessoa pessoa) {
-		this.pessoa = pessoa;
-	}
-
 	public PessoaFisica getFisica() {
 		return fisica;
 	}
@@ -151,21 +138,21 @@ public class PessoaBean implements Serializable, Validator{
 	}
 
 
+	public boolean isEditarCliente() {
+		return editarCliente;
+	}
+
+	public void setEditarCliente(boolean editarCliente) {
+		this.editarCliente = editarCliente;
+	}
+
 	public char getTipoPessoa() {
 		return tipoPessoa;
 	}
 
 	public void setTipoPessoa(char tipoPessoa) {
 		this.tipoPessoa = tipoPessoa;
-	}
-	
-	public String getNome() {
-		return nome;
-	}
-
-	public void setNome(String nome) {
-		this.nome = nome;
-	}
+	}	
 
 	public boolean isPessoaFisica(){		
 		return tipoPessoa == 'F';
@@ -175,7 +162,16 @@ public class PessoaBean implements Serializable, Validator{
 		return tipoPessoa == 'J';
 	}
 
+	/*
+	
+	public String getNome() {
+		return nome;
+	}
 
+	public void setNome(String nome) {
+		this.nome = nome;
+	}
+	
 	public void setPessoaFisicaJuridica(Pessoa pessoa){
 		
 		log.info("set pessoa " + pessoa);
@@ -192,12 +188,14 @@ public class PessoaBean implements Serializable, Validator{
 		}
 		
 	}
+	*/
 	
 	public boolean isCpfCadastrado(String cpf){
 		
 		PessoaFisica outraPessoaFisica = pessoaDao.getFisicaByCPF(cpf);
-
+		
 		if (outraPessoaFisica != null && !outraPessoaFisica.equals(this.fisica)){
+			log.info("CPF: " + cpf + " pertence a: " + outraPessoaFisica);
 	        return true;
 		}
 		return false;
@@ -253,45 +251,60 @@ public class PessoaBean implements Serializable, Validator{
 				pessoa.setTelefones(telefones);
 			}
 			
-			//pessoa = pessoaDao.getById(pessoa.getId());
 			pessoaDao.insert(pessoa);
 			
 			FacesMessage facesMessage = new FacesMessage(FacesMessage.SEVERITY_INFO, "Cliente "+ pessoa + " inserido com sucesso!", null);  
 	        FacesContext.getCurrentInstance().addMessage(null, facesMessage);
 	        
 		}catch(PersistenceException e){
-			log.error("Falha ao registrar a pessoa " + pessoa);
 			String msg = Exceptions.messageSQLExceptionFromPersistenceException(e); 
-		    FacesMessage facesMessage = new FacesMessage(FacesMessage.SEVERITY_WARN, "Falha:"+ msg, null);  
+			log.error("Falha ao inserir pessoa " + pessoa + " Error:" + msg);
+			FacesMessage facesMessage = new FacesMessage(FacesMessage.SEVERITY_WARN, "Falha:"+ msg, null);  
 		    FacesContext.getCurrentInstance().validationFailed();
 		    FacesContext.getCurrentInstance().addMessage(null, facesMessage);
 		    
-		    return "novo-cliente.xhtml";
+		    return "cliente.xhtml";
 		}
 
-        return "lista-clientes.xhtml?faces-redirect=true";
+        return "lista-cliente.xhtml?faces-redirect=true";
 		
 	}
 
-	public String novoCliente(){
-		novoCliente = true;
-		return "novo-cliente.xhtml?faces-redirect=true";
-	}
 	
-	public void alterar(ActionEvent event){
-		log.info("alterar pessoa");
-		
-		if(isPessoaFisica()){
-			log.info("update fisica");
-			pessoaDao.update(fisica);
+	public String gravar(){		
+		try{
 			
-		}else if (isPessoaJuridica()){
-			log.info("update juridica");
-			pessoaDao.update(juridica);
+			String msg = null;
+			
+			if (isPessoaFisica()) {
+				log.info("Gravar pessoa física " + fisica);
+				pessoaDao.update(fisica);
+				msg = "Cliente " + fisica + " atualizado com sucesso";
+
+			} else if (isPessoaJuridica()) {
+				log.info("Gravar pessoa jurídica " + juridica);
+				pessoaDao.update(juridica);
+				msg = "Cliente " + juridica + " atualizado com sucesso";
+			}
+			
+			FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_INFO,msg,null);
+			FacesContext.getCurrentInstance().addMessage(null, message);
+			
+			
+		}catch(PersistenceException e){
+			String msg = Exceptions.messageSQLExceptionFromPersistenceException(e);
+			log.error("Falha ao gravar pessoa. Error:" + msg);
+			FacesMessage facesMessage = new FacesMessage(FacesMessage.SEVERITY_WARN, "Falha:"+ msg, null);  
+		    FacesContext.getCurrentInstance().validationFailed();
+		    FacesContext.getCurrentInstance().addMessage(null, facesMessage);
+		    
+		    return "cliente.xhtml";
 		}
+
+        return "lista-cliente.xhtml?faces-redirect=true";
 	}
 	
-	public String deletar(){
+	public String excluir(){
 		
 		if (isPessoaFisica()){
 			log.info("delete fisica");
@@ -312,8 +325,9 @@ public class PessoaBean implements Serializable, Validator{
 			FacesContext.getCurrentInstance().addMessage(null, message);		
 		}
 		
+		pessoas = null;
 		pessoas = findAll();
-		return "lista-clientes.xhtml?faces-redirect=true";
+		return "lista-cliente.xhtml?faces-redirect=true";
 	}
 	
 
@@ -324,53 +338,28 @@ public class PessoaBean implements Serializable, Validator{
 		return pessoas;
 	}
 	
-	
-	public void cancelar(ActionEvent event){
-		FacesContext.getCurrentInstance().responseComplete();
-	}
 
 	/**
 	 * ****************************************
 	 * Métodos para a view
 	 * ****************************************
-	 */
+	 */	
 	
-	public String edit(Pessoa pessoa){
-		
-		/*ExternalContext context = FacesContext.getCurrentInstance().getExternalContext();
-		String idPessoa = context.getRequestParameterMap().get("idPessoa");
-		
-		Pessoa pessoa = pessoaDao.getById(Long.parseLong(idPessoa));
-		*/
-		editarCliente = false;
-		if (pessoa != null){
-			telefoneBean.setTelefones(pessoa.getTelefones());
-			
-			if (pessoa instanceof PessoaFisica){
-				fisica = (PessoaFisica) pessoa;
-				setTipoPessoa('F');
-			}
-			else if(pessoa instanceof PessoaJuridica){
-				juridica = (PessoaJuridica) pessoa;
-				setTipoPessoa('J');
-			}
-			editarCliente = true;
-		}
-		
-		return "novo-cliente.xhtml";
-	}
-	
+	/*
+	 * Validação de CPF 
+	 * Não pode registrar 2 pessoas com mesmo CPF
+	*/
+	/*
 	@Override
 	public void validate(FacesContext context, UIComponent component, Object object) throws ValidatorException {
 		
-		/*
-		 * Validação de CPF 
-		 * Não pode registrar 2 pessoas com mesmo CPF
-		 */
+		
+		log.info("validate CPF");
+		
 		
 		UIComponent outroComponente; 
 		outroComponente = component.findComponent("cpf");
-		
+					
 		if (outroComponente.equals(component)){
 			
 			String cpf = object.toString();
@@ -381,17 +370,9 @@ public class PessoaBean implements Serializable, Validator{
 				
 				FacesMessage facesMessage = new FacesMessage(FacesMessage.SEVERITY_WARN, "CPF " + cpf + " já está cadastrado!", null);
 				throw new ValidatorException(facesMessage);
-			}		
+			}
 		}
-		return;
+		
 	}
-	
-
-	public UIComponent getForm() {
-		return form;
-	}
-
-	public void setForm(UIComponent form) {
-		this.form = form;
-	}
+	*/
 }

@@ -94,7 +94,7 @@ public class UsuarioBean implements Serializable {
 		FacesMessage facesMessage = new FacesMessage(FacesMessage.SEVERITY_INFO, "Usuário "+usuario.getLogon()+" criado com sucesso!", null);
         FacesContext.getCurrentInstance().addMessage(null, facesMessage);
 		
-		return "lista-usuarios.xhtml?faces-redirect=true";
+		return "lista-usuario.xhtml?faces-redirect=true";
 	}
 	
 	public String salvar(Usuario usuario){		
