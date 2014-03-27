@@ -45,3 +45,7 @@
 }.buttonConfirm:active {
 	position:relative;
 	top:1px;}
+
+.fontPadrao{
+	font-family:Calibri;
+}

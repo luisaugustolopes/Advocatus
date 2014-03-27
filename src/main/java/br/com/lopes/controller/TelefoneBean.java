@@ -78,6 +78,17 @@ public class TelefoneBean implements Serializable {
 	public void setTelefoneCadastro(Telefone[] telefoneCadastro) {
 		this.telefoneCadastro = telefoneCadastro;
 	}
+	
+	public String getTipoTelefone(Telefone telefone){
+		String tipo = null;
+		if (telefone.getTipo() == Telefone.FIXO){
+			tipo = "Fixo" ;
+		}else if (telefone.getTipo() == Telefone.CELULAR){
+			tipo = "Celular";
+		}
+		
+		return tipo;
+	}
 
 	public void inserir(){
 		
@@ -114,10 +125,6 @@ public class TelefoneBean implements Serializable {
 		}
 	}
 	
-	public void acao(ActionEvent actionEvent){
-		log.info("acao");
-	}
-	
 	
 	public void gravar(RowEditEvent event) {
 		
@@ -142,7 +149,7 @@ public class TelefoneBean implements Serializable {
     }  
 	
 	
-	public void deletar(ActionEvent event){
+	public void deletar(Telefone telefone){
 		
 		try {
 			
@@ -161,6 +168,10 @@ public class TelefoneBean implements Serializable {
 			FacesContext.getCurrentInstance().validationFailed();
 			FacesContext.getCurrentInstance().addMessage(null, facesMessage);
 		}
-	}	
+	}
+	
+	public void cancelar(){
+		telefone = new Telefone();
+	}
 	
 }

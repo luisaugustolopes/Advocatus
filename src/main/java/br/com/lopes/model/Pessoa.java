@@ -40,17 +40,15 @@ public abstract class Pessoa {
 	@Column(insertable=false)
 	private String tipo;
 	
-	@OneToMany(mappedBy="pessoa")
-	protected List<Endereco> enderecos;
-	
 	@ForeignKey(name="FK_PESSOA_USUARIO")
 	@OneToOne
 	protected Usuario usuario;
 	
+	@OneToMany(mappedBy="pessoa",cascade=CascadeType.REMOVE)
+	protected List<Endereco> enderecos;
 	
 	@OneToMany(mappedBy="pessoa",cascade=CascadeType.REMOVE)
-	private List<Telefone> telefones;
-	
+	private List<Telefone> telefones;	
 	
 	public Pessoa(){}
 	

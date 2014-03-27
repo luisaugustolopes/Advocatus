@@ -23,7 +23,7 @@
 		<h:messages id="msgPrincipal"/>
 		<p:dataTable id="gridClientes" var="clientes"
 			value="#{pessoaBean.findAll()}" filteredValue="#{pessoaBean.pessoas}"
-			rowsPerPageTemplate="10,30,50" rowKey="#{clientes.id}" rows="10"
+			rowsPerPageTemplate="12,30,50" rowKey="#{clientes.id}" rows="12"
 			paginator="true">
 
 			<f:facet name="header">Clientes

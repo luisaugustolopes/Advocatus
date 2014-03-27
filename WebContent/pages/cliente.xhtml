@@ -97,10 +97,45 @@
 	<!--***************************************
 	Panel Telefone / Endereço
 	***************************************-->
-	<p:accordionPanel id="panelExtra">
+	<p:accordionPanel id="panelExtra" multiple="true" activeIndex="0,1">
+
+		<!-- ENDEREÇO -->
+		<p:tab title="Endereço" id="tabEndereco">
+				
+			<!--*************************************** 
+			Edição dos endereço
+			Inicialmente a edição é de apenas 1 endereço, mas a modelagem permite vários.
+			***************************************-->			
+			<h:panelGrid columns="6">
+				<h:outputText value="CEP:" />
+				<p:inputMask mask="99999-999" value="" />
+				
+				<ui:remove>
+				<h:outputText value="Estado:" />
+				<p:selectOneMenu value="">
+					<f:selectItem itemLabel="Selecione" value=""/>
+					<f:selectItems value=""/>
+					<p:ajax update="cidade" />
+				</p:selectOneMenu>
+				</ui:remove>
+				
+				<h:outputText value="Cidade:" />
+				<p:selectOneMenu id="cidade" value="" />
+				
+				<h:outputText value="Endereço:" />
+				<p:inputText value="" />
+				
+				<h:outputText value="Número:" />
+				<p:inputText value="" />
+				
+				<h:outputText value="Complemento:" />
+				<p:inputText value="" />
+				
+			</h:panelGrid>						
+		</p:tab>
+		
 		<!-- TELEFONES -->
 		<p:tab title="Telefone" id="tabTelefone">
-
 
 			<!--*************************************** 
 			Inclusão de telefone para novo cliente
@@ -130,10 +165,10 @@
 				<h:outputLabel value="Número:" />
 				<p:inputText value="#{telefoneBean.telefone.numero}" />
 				<h:outputLabel value="Tipo:" style="margin-left:10px" />
-				<p:selectOneRadio value="#{telefoneBean.telefone.tipo}">
+				<p:selectOneButton value="#{telefoneBean.telefone.tipo}">
 					<f:selectItem itemLabel="Fixo" itemValue="0" />
 					<f:selectItem itemLabel="Celular" itemValue="1" />
-				</p:selectOneRadio>
+				</p:selectOneButton>
 				
 				
 				<p:commandButton value="Adicionar"
@@ -157,12 +192,14 @@
 				<p:column>
 					<p:cellEditor>
 						<f:facet name="output">
-							<h:outputText value="#{telefone.ddd}" />-<h:outputText
-								value="#{telefone.numero}" />
+							<h:outputText value="#{telefone.ddd}" />-<h:outputText value="#{telefone.numero}"/>  -  <h:outputText value="#{telefoneBean.getTipoTelefone(telefone)}"/>
 						</f:facet>
 						<f:facet name="input">
-							<p:inputText value="#{telefone.ddd}" style="width:30px" />-<p:inputText
-								value="#{telefone.numero}" style="width:90px" />
+							<p:inputText value="#{telefone.ddd}" style="width:30px" />-<p:inputText value="#{telefone.numero}" style="width:90px" />  
+							<p:selectOneButton value="#{telefone.tipo}">
+								<f:selectItem itemLabel="Fixo" itemValue="0" />
+								<f:selectItem itemLabel="Celular" itemValue="1" />
+							</p:selectOneButton>
 						</f:facet>
 					</p:cellEditor>
 				</p:column>
@@ -172,16 +209,39 @@
 				</p:column>
 
 				<p:column style="width:6%">
+
+				<p:commandLink id="lnkExcluirFone" title="Excluir"
+						update=":dlgExcluirTelefone"
+						oncomplete="dialogExcluirTelefone.show()"
+						styleClass="ui-icon ui-icon-circle-close">
+						<f:setPropertyActionListener target="#{telefoneBean.telefone}" value="#{telefone}"/>
+				</p:commandLink>
+				
+				<ui:remove>
+				<!-- REMOVIDO Link com confirmação no próprio corpo. Problema: não é possível passar parametro -->
+				<p:commandLink id="lnkExcluirFone" title="Excluir" 
+						action="#{telefoneBean.deletar(telefone)}"
+						update="dtableTelefone,:formPrincipal:msgs"
+						styleClass="ui-icon ui-icon-circle-close">
+						<p:confirm header="Confirmação" message="Confirma a exclusão do telefone #{telefone}?" icon="ui-icon-alert" />
+				</p:commandLink>
+				</ui:remove>
+								
+				<!-- REMOVIDO Link para setar o telefone -->
+				<ui:remove>
 					<p:commandLink id="lnkExcluirFone" title="Excluir" 
 						action="#{telefoneBean.setTelefone(telefone)}"
 						update=":dlgExcluirTelefone"
 						oncomplete="dialogExcluirTelefone.show()"
 						styleClass="ui-icon ui-icon-circle-close">
 					</p:commandLink>
+				</ui:remove>
 				</p:column>
 			</p:dataTable>
 		</p:tab>
+		
 	</p:accordionPanel>
+	
 
 	<p:commandButton id="btnVoltar" ajax="false" value="Voltar"
 		action="lista-cliente?faces-redirect=true" immediate="true" />
@@ -213,6 +273,7 @@
 
 <ui:define name="dialogs">
 
+
 <!--******************************* 
 	Excluir Pessoa
 ***********************************-->
@@ -234,7 +295,7 @@
                 styleClass="ui-confirmdialog-no"/>
 </p:confirmDialog>	
 	
-	
+
 <!--******************************* 
 	Excluir Telefone
 ***********************************-->
@@ -248,11 +309,12 @@
 	    <p:commandButton value="Sim"
                 oncomplete="dialogExcluirTelefone.hide()"
                 update=":formPrincipal:panelExtra,:formPrincipal:msgs"
-                actionListener="#{telefoneBean.deletar}"
+                action="#{telefoneBean.deletar(telefoneBean.telefone)}"
                 styleClass="ui-confirmdialog-yes"/>
                 
         <p:commandButton id="decline" value="Não"
-                onclick="dialogExcluirTelefone.hide()" 
+        		action="#{telefoneBean.cancelar}"
+        		oncomplete="dialogExcluirTelefone.hide()"
                 styleClass="ui-confirmdialog-no"/>
 </p:confirmDialog>
 
