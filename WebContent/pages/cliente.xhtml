@@ -16,10 +16,12 @@
 
 <h:form  id="formPrincipal">
 	
-				
-	<p:panel id="panel" rendered="#{pessoaBean.novoCliente}"
-		header="Cadastro Cliente - Informe os dados abaixo"
-		style="margin-bottom:10px;">
+	<p:layout id="panelExtra">
+	
+	
+	<p:layoutUnit position="north" style="border:0">
+	
+	<p:panel header="Cadastro Cliente - Informe os dados abaixo" id="panel" rendered="#{pessoaBean.novoCliente}">
 
 		<h:panelGrid columns="2">
 			<h:outputText value="Tipo de Pessoa:" />
@@ -31,27 +33,29 @@
 		</h:panelGrid>
 	</p:panel>
 	
+	<p:panel header="Informações do cliente" rendered="#{pessoaBean.editarCliente}" />
+
+	<h:panelGrid columns="2">
 	
-	<p:outputPanel id="panelPF">
-		<p:panel header="Pessoa Física"
-			rendered="#{pessoaBean.isPessoaFisica()}">
+	<p:outputPanel id="panelPF" rendered="#{pessoaBean.isPessoaFisica()}">
+		<p:panel header="Pessoa Física">
 			<h:panelGrid columns="2">
 				<h:outputLabel value="ID:" />
 				<h:outputLabel value="#{pessoaBean.fisica.id}" />
 
 				<h:outputLabel for="cpf" value="CPF:" />
-				<p:inputMask mask="999.999.999-99" id="cpf"
+				<p:inputMask mask="999.999.999-99" id="cpf" size="15"
 					value="#{pessoaBean.fisica.cpf}" required="true"
 					requiredMessage=" Informe o CPF">
 					<p:ajax update="@form" event="blur" />
 				</p:inputMask>
 
 				<h:outputLabel value="Nome:" />
-				<p:inputText value="#{pessoaBean.fisica.nome}" required="true"
+				<p:inputText value="#{pessoaBean.fisica.nome}" required="true" size="30"
 					requiredMessage="Informe o Nome" />
 
 				<h:outputLabel value="E-mail:" />
-				<p:inputText value="#{pessoaBean.fisica.email}" />
+				<p:inputText value="#{pessoaBean.fisica.email}" size="30"/>
 
 				<h:outputLabel for="sexo" value="Sexo:" />
 				<p:selectOneRadio id="sexo" value="#{pessoaBean.fisica.sexo}"
@@ -61,7 +65,7 @@
 				</p:selectOneRadio>
 
 				<h:outputLabel for="dataNascimento" value="Data Nascimento:" />
-				<p:calendar value="#{pessoaBean.fisica.dataNascimento}"
+				<p:calendar value="#{pessoaBean.fisica.dataNascimento}" size="10"
 					id="dataNascimento" showOn="button" pattern="dd/MM/yyyy">
 				</p:calendar>
 
@@ -71,9 +75,8 @@
 	</p:outputPanel>
 
 
-	<p:outputPanel id="panelPJ">
-		<p:panel header="Pessoa Jurídica"
-			rendered="#{pessoaBean.isPessoaJuridica()}">
+	<p:outputPanel id="panelPJ" rendered="#{pessoaBean.isPessoaJuridica()}">
+		<p:panel header="Pessoa Jurídica">
 
 			<h:panelGrid columns="2">
 				<h:outputLabel value="ID:" />
@@ -84,7 +87,7 @@
 					value="#{pessoaBean.juridica.cnpj}" />
 
 				<h:outputLabel value="Nome:" />
-				<p:inputText value="#{pessoaBean.juridica.nome}" />
+				<p:inputText value="#{pessoaBean.juridica.nome}" size="30"/>
 
 				<h:outputLabel value="E-mail:" />
 				<p:inputText value="#{pessoaBean.fisica.email}" />
@@ -92,50 +95,62 @@
 			</h:panelGrid>
 		</p:panel>
 	</p:outputPanel>
-
-
-	<!--***************************************
-	Panel Telefone / Endereço
-	***************************************-->
-	<p:accordionPanel id="panelExtra" multiple="true" activeIndex="0,1">
-
+	
+	
 		<!-- ENDEREÇO -->
-		<p:tab title="Endereço" id="tabEndereco">
-				
+		<p:panel header="Endereço" id="tabEndereco">				
+			
 			<!--*************************************** 
 			Edição dos endereço
 			Inicialmente a edição é de apenas 1 endereço, mas a modelagem permite vários.
-			***************************************-->			
-			<h:panelGrid columns="6">
+			***************************************-->
+			<h:panelGrid columns="2">
+			
 				<h:outputText value="CEP:" />
-				<p:inputMask mask="99999-999" value="" />
+				<p:inputMask mask="99999-999" value="#{enderecoBean.endereco.cep}" size="8"/>
 				
-				<ui:remove>
 				<h:outputText value="Estado:" />
-				<p:selectOneMenu value="">
-					<f:selectItem itemLabel="Selecione" value=""/>
-					<f:selectItems value=""/>
-					<p:ajax update="cidade" />
+				<p:selectOneMenu value="#{enderecoBean.endereco.cidade.estado}" filter="true">
+					<f:selectItem itemLabel="Selecione" itemValue=""/>
+					<f:selectItems value="#{cidadeBean.estados}"/>
+					<p:ajax update="cidade" listener="#{cidadeBean.buscarCidadesDoEstado(enderecoBean.endereco.cidade.estado)}"/>
 				</p:selectOneMenu>
-				</ui:remove>
 				
 				<h:outputText value="Cidade:" />
-				<p:selectOneMenu id="cidade" value="" />
+				<p:selectOneMenu id="cidade" value="#{enderecoBean.endereco.cidade.id}" filter="true">
+					<f:selectItem itemLabel="Selecione" itemValue="" />
+					<f:selectItems value="#{cidadeBean.cidades}" var="c" itemLabel="#{c.nome}" itemValue="#{c.id}"/>
+				</p:selectOneMenu>
 				
 				<h:outputText value="Endereço:" />
-				<p:inputText value="" />
-				
+				<p:inputText value="#{enderecoBean.endereco.endereco}" size="30"/>
+			
 				<h:outputText value="Número:" />
-				<p:inputText value="" />
+				<p:inputText value="#{enderecoBean.endereco.numero}" size="5"/>
 				
 				<h:outputText value="Complemento:" />
-				<p:inputText value="" />
-				
-			</h:panelGrid>						
-		</p:tab>
+				<p:inputText value="#{enderecoBean.endereco.complemento}" size="30"/>
+			</h:panelGrid>
+		</p:panel>
+		</h:panelGrid>
+	</p:layoutUnit>
+	
+	
+ 	
+		<!--***************************************
+		Panel Telefone / Endereço
+		***************************************-->	
+	
+		<p:layoutUnit position="west" style="border:0">
 		
+		</p:layoutUnit>
+		
+		
+	
+	
+		<p:layoutUnit position="center" style="border:0">
 		<!-- TELEFONES -->
-		<p:tab title="Telefone" id="tabTelefone">
+		<p:panel header="Telefone" id="tabTelefone">
 
 			<!--*************************************** 
 			Inclusão de telefone para novo cliente
@@ -238,11 +253,9 @@
 				</ui:remove>
 				</p:column>
 			</p:dataTable>
-		</p:tab>
-		
-	</p:accordionPanel>
+		</p:panel>
 	
-
+	
 	<p:commandButton id="btnVoltar" ajax="false" value="Voltar"
 		action="lista-cliente?faces-redirect=true" immediate="true" />
 	
@@ -262,8 +275,13 @@
 		oncomplete="dialogExcluirPessoa.show()"
 		update=":dlgExcluirPessoa"
 		rendered="#{pessoaBean.editarCliente}" />
-		
+	
+	
 	<h:messages id="msgs" />
+	</p:layoutUnit>
+	
+	
+	</p:layout>
 	
 </h:form>	
 

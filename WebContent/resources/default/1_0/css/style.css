@@ -47,5 +47,9 @@
 	top:1px;}
 
 .fontPadrao{
-	font-family:Calibri;
+	font-family:Calibri;color:white
+}
+
+.cellAlignTop td {
+    vertical-align: top;
 }

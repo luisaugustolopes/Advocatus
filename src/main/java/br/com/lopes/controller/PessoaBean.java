@@ -16,6 +16,7 @@ import javax.persistence.PersistenceException;
 import org.apache.log4j.Logger;
 
 import br.com.lopes.dao.PessoaDAO;
+import br.com.lopes.model.Endereco;
 import br.com.lopes.model.Pessoa;
 import br.com.lopes.model.PessoaFisica;
 import br.com.lopes.model.PessoaJuridica;
@@ -42,6 +43,9 @@ public class PessoaBean implements Serializable{
 	@ManagedProperty(value="#{telefoneBean}")
 	private TelefoneBean telefoneBean;
 	
+	@ManagedProperty(value="#{enderecoBean}")
+	private EnderecoBean enderecoBean;
+	
 	private Logger log = Logger.getLogger(getClass());
 
 
@@ -66,11 +70,17 @@ public class PessoaBean implements Serializable{
 	
 		editarCliente = (idPessoa != null && !idPessoa.equals(0));
 		
-		if (editarCliente){			
+		if (editarCliente){
 			
 			Pessoa pessoa = pessoaDao.getById(Long.parseLong(idPessoa));
 
-			telefoneBean.setTelefones(pessoa.getTelefones());			
+			//Buscar os telefones da pessoa
+			telefoneBean.setTelefones(pessoa.getTelefones());
+			
+			// Buscar o endereço da pesssoa
+			if (!pessoa.getEnderecos().isEmpty()){
+				enderecoBean.setEndereco(pessoa.getEnderecos().get(0));
+			}
 			
 			if (pessoa instanceof PessoaFisica){
 				fisica = (PessoaFisica) pessoa;
@@ -220,6 +230,14 @@ public class PessoaBean implements Serializable{
 	}
 
 
+	public EnderecoBean getEnderecoBean() {
+		return enderecoBean;
+	}
+
+	public void setEnderecoBean(EnderecoBean enderecoBean) {
+		this.enderecoBean = enderecoBean;
+	}
+
 	/**
 	 * ****************************************
 	 * Métodos de negócio
@@ -233,6 +251,7 @@ public class PessoaBean implements Serializable{
 					
 			if(novoCliente){
 
+				// Inserir Telefones
 				List<Telefone> telefones = new ArrayList<>();
 
 				// Telefone fixo
@@ -249,6 +268,15 @@ public class PessoaBean implements Serializable{
 				}
 				
 				pessoa.setTelefones(telefones);
+				
+
+				// Inserir Endereço
+				List<Endereco> enderecos = new ArrayList<>();
+				if (enderecoBean.getEndereco() != null){
+					enderecos.add(enderecoBean.getEndereco());					
+					pessoa.setEnderecos(enderecos);
+				}
+				
 			}
 			
 			pessoaDao.insert(pessoa);

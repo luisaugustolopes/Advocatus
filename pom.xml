@@ -15,7 +15,7 @@
 			<version>8.0.3</version>
 		</dependency>
 
-		<!-- HIBERNATE CORE --> 
+		<!-- HIBERNATE CORE -->
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-core</artifactId>
@@ -26,7 +26,7 @@
 			<artifactId>hibernate-entitymanager</artifactId>
 			<version>4.2.7.Final</version>
 		</dependency>
-		
+
 		<!-- C3P0 HIBERNATE -->
 		<dependency>
 			<groupId>org.hibernate</groupId>
@@ -66,13 +66,8 @@
 		</dependency>
 
 
-		<!-- OMNIFACES 
-		<dependency>
-			<groupId>org.omnifaces</groupId>
-			<artifactId>omnifaces</artifactId>
-			<version>1.7</version>
-		</dependency>
-		-->
+		<!-- OMNIFACES <dependency> <groupId>org.omnifaces</groupId> <artifactId>omnifaces</artifactId> 
+			<version>1.7</version> </dependency> -->
 
 
 		<!-- ORACLE XE -->

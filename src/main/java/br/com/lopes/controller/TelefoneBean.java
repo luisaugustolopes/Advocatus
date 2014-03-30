@@ -54,7 +54,13 @@ public class TelefoneBean implements Serializable {
 		telefoneCadastro[0].setTipo(Telefone.FIXO);
 		telefoneCadastro[1].setTipo(Telefone.CELULAR);
 	}	
+
 	
+	/**
+	 * ****************************************
+	 * Métodos getters/setters 
+	 * ****************************************
+	 */	
 	public Telefone getTelefone() {
 		return telefone;
 	}
@@ -153,13 +159,12 @@ public class TelefoneBean implements Serializable {
 		
 		try {
 			
-			telefone = telefoneDAO.getById(telefone.getId());
-			telefoneDAO.delete(telefone);			
-			telefones.remove(telefone);
-			String msg = "Telefone " + telefone + " excluído.";
-			telefone = new Telefone();
+			this.telefone = telefoneDAO.getById(telefone.getId());
+			telefoneDAO.delete(this.telefone);			
+			telefones.remove(this.telefone);
+			this.telefone = new Telefone();
 			
-			FacesMessage facesMessage = new FacesMessage(FacesMessage.SEVERITY_INFO, msg ,null);
+			FacesMessage facesMessage = new FacesMessage(FacesMessage.SEVERITY_INFO, "Telefone " + telefone + " excluído." ,null);
 			FacesContext.getCurrentInstance().addMessage(null, facesMessage);
 			
 		} catch (PersistenceException e) {
