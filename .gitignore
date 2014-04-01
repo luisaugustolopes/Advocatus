@@ -4,6 +4,8 @@ pom.xml.releaseBackup
 pom.xml.next
 release.properties
 
+logs/
+
 *.pydevproject
 .metadata
 .gradle

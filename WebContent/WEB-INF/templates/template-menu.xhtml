@@ -20,7 +20,7 @@ HEAD
 
 	<ui:debug hotkey="x"/>
 	
-	<div align="center" >
+	<div align="center">
 		
 		<!--*****************************************************	
 		BODY
@@ -28,8 +28,8 @@ HEAD
 		
 		<p:layout style="min-width:800px;max-width:1020px;min-height:620px" fullPage="true">
 			
-			<p:layoutUnit position="north" size="50" style="border:0">
-				<h:outputLabel value="Advocatus" style="font-size:30px" styleClass="fontPadrao"/>
+			<p:layoutUnit position="north" size="28" style="border:0">
+				<h:outputLabel value="Advocatus" style="font-size:20px" styleClass="fontPadrao"/>
 			</p:layoutUnit>	
 			
 			<p:layoutUnit position="center" style="border:0">
@@ -50,11 +50,13 @@ HEAD
 												
 						<!--*****************************************************	
 						FOOTER
-						*********************************************************-->						
+						*********************************************************-->	
+						<ui:remove>					
 						<p:layoutUnit id="bottom" position="south" size="60" style="border:0">
 							<ui:insert name="footer"></ui:insert>
 							<h:outputLabel value="Luís Lopes 2014" styleClass="fontPadrao" /> &copy; <h:outputLabel value="Todos os direitos reservados"/>							
-						</p:layoutUnit>		
+						</p:layoutUnit>
+						</ui:remove>		
 					</p:layout>				
 			</p:layoutUnit>
 		</p:layout>		

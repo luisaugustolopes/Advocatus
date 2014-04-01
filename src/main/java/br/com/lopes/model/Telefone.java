@@ -24,7 +24,7 @@ public class Telefone {
 	private String ddd;	
 	
 	@Column(nullable=false)
-	private String numero;	
+	private String numero;
 	
 	@Column(nullable=false)
 	private int tipo;

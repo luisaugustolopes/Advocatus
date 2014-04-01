@@ -1,16 +1,21 @@
 package br.com.lopes.model;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 
 import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.Index;
 
 @Entity
+@Table(uniqueConstraints={@UniqueConstraint(columnNames={"pessoa_id"},name="UK_ENDERECO_PESSOA")})
 public class Endereco {
  
 	@SequenceGenerator(name="enderecoGenerator",sequenceName="seq_endereco")
@@ -26,11 +31,11 @@ public class Endereco {
 	
 	@Index(name="AK_ENDERECO_PESSOA")
 	@ForeignKey(name="FK_ENDERECO_PESSOA")
-	@ManyToOne
+	@OneToOne(optional=false)
 	private Pessoa pessoa;
 	
 	@ForeignKey(name="FK_ENDERECO_CIDADE")
-	@ManyToOne
+	@ManyToOne(optional=false)
 	private Cidade cidade;
 
 	public long getId() {
@@ -89,5 +94,10 @@ public class Endereco {
 		this.cidade = cidade;
 	}
 	
+	
+	@Override
+	public String toString() {
+		return endereco + '-' + cidade.getNome() + '/' + cidade.getEstado();
+	}
 }
  

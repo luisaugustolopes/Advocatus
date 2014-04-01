@@ -46,6 +46,7 @@ public class GenericDAO<PK, T> {
     	} catch (Exception e) {
 			
 			log.error("Falha ao inserir Class/Entity "+entity.getClass().getName() +'/'+entity + " Error:"+ e.getMessage());
+			e.printStackTrace();
 			if (entityManager.getTransaction().isActive()) {
 				entityManager.getTransaction().rollback();
 			}
@@ -64,6 +65,7 @@ public class GenericDAO<PK, T> {
 			log.info("update sucessful");
 		} catch (Exception e) {
 			log.error("Falha ao gravar Class/Entity "+entity.getClass().getName() +'/'+entity + " Error:" + e.getMessage());
+			e.printStackTrace();
 			if (entityManager.getTransaction().isActive()) {
 				entityManager.getTransaction().rollback();
 			}
@@ -83,6 +85,7 @@ public class GenericDAO<PK, T> {
 		} catch (Exception e) {
 			
 			log.error("Falha ao deletar Class/Entity "+entity.getClass().getName() +'/'+entity + " Error:"+ e.getMessage());
+			e.printStackTrace();
 			if (entityManager.getTransaction().isActive()) {
 				entityManager.getTransaction().rollback();
 			}

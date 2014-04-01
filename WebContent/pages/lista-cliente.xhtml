@@ -21,9 +21,9 @@
 	<h:form id="formPrincipal">
 
 		<h:messages id="msgPrincipal"/>
-		<p:dataTable id="gridClientes" var="clientes"
+		<p:dataTable id="gridClientes" var="clientes" 
 			value="#{pessoaBean.findAll()}" filteredValue="#{pessoaBean.pessoas}"
-			rowsPerPageTemplate="12,30,50" rowKey="#{clientes.id}" rows="12"
+			rowsPerPageTemplate="10,30,50" rowKey="#{clientes.id}" rows="10"
 			paginator="true">
 
 			<f:facet name="header">Clientes
@@ -50,32 +50,40 @@
 			</p:column>
 
 			<p:column headerText="Nome" filterBy="nome" sortBy="nome">
-				<h:outputLabel value="#{clientes.nome}" />
+				<h:outputText value="#{clientes.nome}" />
 			</p:column>
 
 			<p:column headerText="Tipo">
-				<h:outputLabel value="#{clientes.tipo}" />
+				<h:outputText value="#{clientes.tipo}" />
 			</p:column>
 
 			<p:column headerText="CPF/CNPJ"
 				filterBy="#{clientes.tipo == 'Física'?clientes.cpf:clientes.cnpj}">
-				<h:outputLabel
+				<h:outputText
 					value="#{clientes.tipo == 'Física'?clientes.cpf:clientes.cnpj}" />
 			</p:column>
 
 
 			<p:column headerText="Sexo">
-				<h:outputLabel value="#{clientes.tipo == 'Física'?clientes.sexo:''}" />
+				<h:outputText value="#{clientes.tipo == 'Física'?clientes.sexo:''}" />
 			</p:column>
 
 			<p:column headerText="E-mail" filterBy="email">
-				<h:outputLabel value="#{clientes.email}" />
+				<h:outputText value="#{clientes.email}" />
 			</p:column>
 
-			<p:column>
-				<h:link styleClass="ui-icon ui-icon-pencil" value="editar 1" outcome="cliente">
+			<p:column headerText="Opções">
+				<p:panelGrid columns="2">
+				<h:link styleClass="ui-icon ui-icon-pencil" title="Editar" outcome="cliente">
 					<f:param name="idPessoa" value="#{clientes.id}" />
 				</h:link>
+				<p:commandLink update=":Detalhe"
+					action="#{pessoaBean.carregarDetalhes(clientes)}"
+					oncomplete="dialogDetalhe.show();" styleClass="ui-icon ui-icon-contact">
+				</p:commandLink>
+				</p:panelGrid>
+				
+				
 				<ui:remove>
 				<h:commandLink title="Alterar" rendered="#{clientes.tipo == 'Física'}"
 					action="cliente?faces-redirect=true&amp;includeViewParams=true"											
@@ -88,23 +96,9 @@
 					<f:setPropertyActionListener target="#{pessoaBean.juridica}" value="#{clientes}"></f:setPropertyActionListener>				
 				</h:commandLink>
 				</ui:remove>
-			</p:column>
+				
+			</p:column>			
 			
-			<ui:remove>
-			<!-- AÇÕES PARA EDITAR NA PRÓPRIA PÁGINA -->
-			<p:column style="width:2%">
-				<p:commandLink title="Alterar" update=":Alterar"
-					action="#{pessoaBean.setPessoaFisicaJuridica(clientes)}"
-					oncomplete="dialogAlterar.show();" immediate="true"						
-					styleClass="ui-icon ui-icon-pencil" />
-			</p:column>
-			<p:column style="width:2%">
-				<p:commandLink title="Excluir" update=":Excluir"
-					action="#{pessoaBean.setPessoaFisicaJuridica(clientes)}"
-					oncomplete="dialogExcluir.show();" immediate="true"
-					styleClass="ui-icon ui-icon-circle-close" />
-			</p:column>
-			</ui:remove>
 
 			<f:facet name="footer">
 	            Total de registros: #{fn:length(pessoaBean.pessoas)}  
@@ -118,82 +112,61 @@
 	
 	
 	
-	
-	<!-- ******************** REMOVIDO ********************-->
-	
-	
-	
-	<ui:remove>
 	<!--******************************* 
-		Editar Pessoa
+		Detalhes Pessoa
 	*******************************-->
-	<p:dialog header="Alterar" widgetVar="dialogAlterar"  id="Alterar" closeOnEscape="true" style="width:220px">
-		<h:form id="formAlterar" binding="#{pessoaBean.form}">
+	<p:dialog header="#{pessoaBean.getPessoa().getNome()}" widgetVar="dialogDetalhe"  id="Detalhe" closeOnEscape="true" style="width:220px">
+		<h:form id="formAlterar">
 
 		<p:tabView>
 
-		<p:tab title="Dados Pessoais">
-		<p:panelGrid id="panelAlterarPF" columns="2" rendered="#{pessoaBean.isPessoaFisica()}">
-  	
-            <h:outputText value="Nome:"/>
-            <p:inputText id="nome" value="#{pessoaBean.fisica.nome}" size="60" required="true" requiredMessage="Informe o Nome"/>
-           	
-           	<h:outputText value="Sexo:" />
-			<p:selectOneRadio value="#{pessoaBean.fisica.sexo}">
-               	<f:selectItem itemLabel="Masculino" itemValue="M"/>
-               	<f:selectItem itemLabel="Feminino" itemValue="F"/>
-               </p:selectOneRadio>
-			
-			<h:outputText value="E-mail:" />
-               <p:inputText value="#{pessoaBean.fisica.email}" size="60"/>
-               
-               
-               <h:outputText value="CPF:"/>
-			<h:panelGroup>
-			
-			<p:inputMask mask="999.999.999-99" id="cpf"  value="#{pessoaBean.fisica.cpf}" required="true" requiredMessage="Informe o CPF" validator="#{pessoaBean.validate}">
-				<p:ajax update="@form" event="blur"/>
-			</p:inputMask>
-			
-			</h:panelGroup>
-               
-        </p:panelGrid>
-
-
-
-		<p:panelGrid id="panelAlterarPJ" columns="2" rendered="#{pessoaBean.isPessoaJuridica()}">
-			<h:outputText value="Nome:" />
-			<p:inputText value="#{pessoaBean.juridica.nome}" size="60" required="true" requiredMessage="Informe o Nome"/>
-			
-			<h:outputText value="E-mail:" />
-			<p:inputText value="#{pessoaBean.juridica.email}" />
-			
-			<h:outputText value="CNPJ:"/>
-			<p:inputMask mask="99.999.999/9999-99" value="#{pessoaBean.juridica.cnpj}" />
-	    </p:panelGrid>
+		<p:tab title="Telefone">
 		
+			<p:dataTable value="#{telefoneBean.telefones}" var="telefones" >
+				<p:column headerText="DDD" >
+					<h:outputText value="#{telefones.ddd}"/>
+				</p:column>
+				
+				<p:column headerText="Número" >
+					<h:outputText value="#{telefones.numero}"/>
+				</p:column>
+				
+			</p:dataTable>
+			
 		</p:tab>
-		
-		<br/>
-		
-		
-		
-		
-		</p:tabView>
 
-        <div align="center">        
-        	<p:commandButton value="Alterar" id="btnAlterar"
-                actionListener="#{pessoaBean.alterar}"	       
-  				update=":formPrincipal:gridClientes, msgEdit"
-                oncomplete="hideDialog(args,dialogAlterar)"/>
-                
-        </div>
-        <h:messages id="msgEdit"/>
+		<p:tab title="Endereço">
+			<h:panelGrid columns="2">
+				<h:outputText value="CEP:" />
+				<h:outputText value="#{enderecoBean.endereco.cep}"/>
+				
+				<h:outputText value="Cidade:" />
+				<h:panelGroup>
+				<h:outputText value="#{enderecoBean.endereco.cidade.nome}"/>/<h:outputText value="#{enderecoBean.endereco.cidade.estado}"/>
+				</h:panelGroup>
+				
+				<h:outputText value="Endereço:" />
+				<h:outputText value="#{enderecoBean.endereco.endereco}"/>
+				
+				<h:outputText value="Número:" />
+				<h:outputText value="#{enderecoBean.endereco.numero}"/>
+				
+				<h:outputText value="Complemento:" />
+				<h:outputText value="#{enderecoBean.endereco.complemento}"/>
+				
+				
+			</h:panelGrid>
+		</p:tab>
+					
+		</p:tabView>
 
 		</h:form>
 	</p:dialog>
 	
-
+	
+	
+	<!-- ******************** REMOVIDO ********************-->
+	<ui:remove>
 	
 	<!--******************************* 
 		Excluir Pessoa
@@ -218,30 +191,6 @@
 	                
 	</p:confirmDialog>
 	
-	
-	
-	<!--******************************* 
-		Excluir Telefone
-	*******************************-->
-	<p:confirmDialog id="ExcluirTelefone"  
-			message="Confirma a exclusão #{pessoaBean.telefone} ?"			
-	        header="Excluir"
-	        severity="alert"
-	        widgetVar="dialogExcluirTelefone"
-	        closeOnEscape="true"
-	        appendTo="@(body)">
-	        
-		    <p:commandButton value="Sim"			    		
-	                oncomplete="dialogExcluirTelefone.hide()"
-	                update=":formPrincipal:gridClientes,:formPrincipal:msgPrincipal"
-	                actionListener="#{pessoaBean.deletar}"
-	                styleClass="ui-confirmdialog-yes"/>
-	                
-	        <p:commandButton id="decline" value="Não"
-	                onclick="dialogExcluir.hide()" 
-	                styleClass="ui-confirmdialog-no"/>
-	                
-	</p:confirmDialog>
 	</ui:remove>
 	
 </ui:define>

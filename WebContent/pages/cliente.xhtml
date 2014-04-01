@@ -83,11 +83,11 @@
 				<h:outputLabel value="#{pessoaBean.juridica.id}" />
 
 				<h:outputLabel for="cnpj" value="CNPJ:" />
-				<p:inputMask mask="99.999.999/9999-99" id="cnpj"
+				<p:inputMask mask="99.999.999/9999-99" id="cnpj" required="true" requiredMessage="Informe o CNPJ"
 					value="#{pessoaBean.juridica.cnpj}" />
 
 				<h:outputLabel value="Nome:" />
-				<p:inputText value="#{pessoaBean.juridica.nome}" size="30"/>
+				<p:inputText value="#{pessoaBean.juridica.nome}" size="30" required="true" requiredMessage="Informe o Nome"/>
 
 				<h:outputLabel value="E-mail:" />
 				<p:inputText value="#{pessoaBean.fisica.email}" />
@@ -101,8 +101,7 @@
 		<p:panel header="Endereço" id="tabEndereco">				
 			
 			<!--*************************************** 
-			Edição dos endereço
-			Inicialmente a edição é de apenas 1 endereço, mas a modelagem permite vários.
+			Edição dos endereço - Inicialmente a edição é de apenas 1 endereço
 			***************************************-->
 			<h:panelGrid columns="2">
 			
@@ -111,25 +110,25 @@
 				
 				<h:outputText value="Estado:" />
 				<p:selectOneMenu value="#{enderecoBean.endereco.cidade.estado}" filter="true">
-					<f:selectItem itemLabel="Selecione" itemValue=""/>
+					<f:selectItem itemLabel="Selecione" itemValue="" noSelectionOption="true"/>
 					<f:selectItems value="#{cidadeBean.estados}"/>
-					<p:ajax update="cidade" listener="#{cidadeBean.buscarCidadesDoEstado(enderecoBean.endereco.cidade.estado)}"/>
+					<p:ajax update="cidade" listener="#{cidadeBean.carregarCidadesDoEstado(enderecoBean.endereco.cidade.estado)}"/>
 				</p:selectOneMenu>
-				
+								
 				<h:outputText value="Cidade:" />
-				<p:selectOneMenu id="cidade" value="#{enderecoBean.endereco.cidade.id}" filter="true">
-					<f:selectItem itemLabel="Selecione" itemValue="" />
-					<f:selectItems value="#{cidadeBean.cidades}" var="c" itemLabel="#{c.nome}" itemValue="#{c.id}"/>
+				<p:selectOneMenu id="cidade" value="#{enderecoBean.endereco.cidade}" filter="true" converter="cidadeConverter" required="true" requiredMessage="Selecione a Cidade">
+					<f:selectItem itemLabel="Selecione" noSelectionOption="true"/>
+					<f:selectItems value="#{cidadeBean.cidades}" var="c" itemLabel="#{c.nome}" itemValue="#{c}"/>
 				</p:selectOneMenu>
 				
 				<h:outputText value="Endereço:" />
-				<p:inputText value="#{enderecoBean.endereco.endereco}" size="30"/>
+				<p:inputText value="#{enderecoBean.endereco.endereco}" size="40" required="true" requiredMessage="Informe o Endereço"/>
 			
 				<h:outputText value="Número:" />
 				<p:inputText value="#{enderecoBean.endereco.numero}" size="5"/>
 				
 				<h:outputText value="Complemento:" />
-				<p:inputText value="#{enderecoBean.endereco.complemento}" size="30"/>
+				<p:inputText value="#{enderecoBean.endereco.complemento}" size="40"/>
 			</h:panelGrid>
 		</p:panel>
 		</h:panelGrid>

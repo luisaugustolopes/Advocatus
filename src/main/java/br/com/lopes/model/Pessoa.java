@@ -44,8 +44,8 @@ public abstract class Pessoa {
 	@OneToOne
 	protected Usuario usuario;
 	
-	@OneToMany(mappedBy="pessoa",cascade=CascadeType.REMOVE)
-	protected List<Endereco> enderecos;
+	@OneToOne(mappedBy="pessoa",cascade=CascadeType.ALL)
+	protected Endereco endereco;
 	
 	@OneToMany(mappedBy="pessoa",cascade=CascadeType.REMOVE)
 	private List<Telefone> telefones;	
@@ -81,12 +81,12 @@ public abstract class Pessoa {
 		this.email = email;
 	}
 
-	public List<Endereco> getEnderecos() {
-		return enderecos;
+	public Endereco getEndereco() {
+		return endereco;
 	}
 
-	public void setEnderecos(List<Endereco> enderecos) {
-		this.enderecos = enderecos;
+	public void setEndereco(Endereco endereco) {
+		this.endereco = endereco;
 	}
 
 	public Usuario getUsuario() {

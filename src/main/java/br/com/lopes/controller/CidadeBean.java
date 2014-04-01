@@ -6,6 +6,7 @@ import java.util.List;
 
 import javax.faces.bean.ApplicationScoped;
 import javax.faces.bean.ManagedBean;
+import javax.faces.bean.ManagedProperty;
 
 import org.apache.log4j.Logger;
 
@@ -28,11 +29,12 @@ public class CidadeBean implements Serializable {
 	private String[] estados = {"AC","AL","AM","AP","BA","CE","DF","ES","GO","MA","MG","MS","MT","PA","PB","PE","PI","PR","RJ","RN","RO","RR","RS","SC","SE","SP","TO"};
 	
 	
+
 	/**
 	 * Constructor
 	 */
 	public CidadeBean(){
-		cidadeDAO = new CidadeDAO();
+		cidadeDAO = new CidadeDAO();		
 	}
 
 
@@ -46,7 +48,7 @@ public class CidadeBean implements Serializable {
 	 * Lista de cidades
 	 * @return List<Cidade>
 	 */
-	public List<Cidade> getCidades() {		
+	public List<Cidade> getCidades() {
 		return cidades;
 	}
 
@@ -74,14 +76,17 @@ public class CidadeBean implements Serializable {
 	 * Métodos negócio 
 	 * ****************************************
 	 */
-	
+
+
 	/**
 	 * Buscar as cidades pertencentes ao estado
 	 * @param estado
 	 */
-	public void buscarCidadesDoEstado(String estado) {  
-        if(estado !=null && !estado.equals(""))  
-            cidades = cidadeDAO.getCidadesPorEstado(estado);
+	public void carregarCidadesDoEstado(String estado) {  
+        if(estado !=null && !estado.equals("")){
+        	cidades = cidadeDAO.getCidadesPorEstado(estado);
+        }
+            
     }  	
 	
 

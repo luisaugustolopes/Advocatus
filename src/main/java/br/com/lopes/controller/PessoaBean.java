@@ -28,6 +28,7 @@ import br.com.lopes.util.Exceptions;
 public class PessoaBean implements Serializable{
 
 	private static final long serialVersionUID = 1L;
+	private Logger log = Logger.getLogger(getClass());
 	
 	private PessoaFisica fisica;
 	private PessoaJuridica juridica;	
@@ -46,8 +47,9 @@ public class PessoaBean implements Serializable{
 	@ManagedProperty(value="#{enderecoBean}")
 	private EnderecoBean enderecoBean;
 	
-	private Logger log = Logger.getLogger(getClass());
-
+	@ManagedProperty(value="#{cidadeBean}")
+	private CidadeBean cidadeBean;
+	
 
 	/**
 	 *  Constructor
@@ -78,9 +80,13 @@ public class PessoaBean implements Serializable{
 			telefoneBean.setTelefones(pessoa.getTelefones());
 			
 			// Buscar o endereço da pesssoa
-			if (!pessoa.getEnderecos().isEmpty()){
-				enderecoBean.setEndereco(pessoa.getEnderecos().get(0));
-			}
+			if (pessoa.getEndereco() != null){
+				enderecoBean.setEndereco(pessoa.getEndereco());
+				cidadeBean.carregarCidadesDoEstado(enderecoBean.getEndereco().getCidade().getEstado());				
+			}else
+				cidadeBean.setCidades(null);
+			
+			enderecoBean.getEndereco().setPessoa(pessoa);
 			
 			if (pessoa instanceof PessoaFisica){
 				fisica = (PessoaFisica) pessoa;
@@ -182,23 +188,10 @@ public class PessoaBean implements Serializable{
 		this.nome = nome;
 	}
 	
-	public void setPessoaFisicaJuridica(Pessoa pessoa){
-		
-		log.info("set pessoa " + pessoa);
-		FacesUtils.cleanSubmittedValues(getForm());		
-		if( pessoa instanceof PessoaFisica){			
-		    this.fisica = (PessoaFisica) pessoa;
-			setTipoPessoa('F');
-			setNome(fisica.toString());
-		}
-		else{
-			this.juridica = (PessoaJuridica) pessoa;
-			setTipoPessoa('J');
-			setNome(juridica.toString());
-		}
-		
-	}
 	*/
+	
+	
+	
 	
 	public boolean isCpfCadastrado(String cpf){
 		
@@ -238,6 +231,14 @@ public class PessoaBean implements Serializable{
 		this.enderecoBean = enderecoBean;
 	}
 
+	public CidadeBean getCidadeBean() {
+		return cidadeBean;
+	}
+
+	public void setCidadeBean(CidadeBean cidadeBean) {
+		this.cidadeBean = cidadeBean;
+	}
+
 	/**
 	 * ****************************************
 	 * Métodos de negócio
@@ -271,11 +272,8 @@ public class PessoaBean implements Serializable{
 				
 
 				// Inserir Endereço
-				List<Endereco> enderecos = new ArrayList<>();
-				if (enderecoBean.getEndereco() != null){
-					enderecos.add(enderecoBean.getEndereco());					
-					pessoa.setEnderecos(enderecos);
-				}
+				pessoa.setEndereco(enderecoBean.getEndereco());
+				
 				
 			}
 			
@@ -306,11 +304,17 @@ public class PessoaBean implements Serializable{
 			
 			if (isPessoaFisica()) {
 				log.info("Gravar pessoa física " + fisica);
+				
+				fisica.setEndereco(enderecoBean.getEndereco());
+				
 				pessoaDao.update(fisica);
 				msg = "Cliente " + fisica + " atualizado com sucesso";
 
 			} else if (isPessoaJuridica()) {
 				log.info("Gravar pessoa jurídica " + juridica);
+				
+				juridica.setEndereco(enderecoBean.getEndereco());
+				
 				pessoaDao.update(juridica);
 				msg = "Cliente " + juridica + " atualizado com sucesso";
 			}
@@ -366,6 +370,32 @@ public class PessoaBean implements Serializable{
 		return pessoas;
 	}
 	
+	
+	public void carregarDetalhes(Pessoa pessoa){
+		
+		//Telefones da pessoa
+		telefoneBean.setTelefones(pessoa.getTelefones());
+		
+		//Endereço
+		enderecoBean.setEndereco(null);
+		if (pessoa.getEndereco() != null)
+			enderecoBean.setEndereco(pessoa.getEndereco());
+		
+		setPessoaFisicaJuridica(pessoa);
+	}
+	
+	public void setPessoaFisicaJuridica(Pessoa pessoa){
+		
+		if( pessoa instanceof PessoaFisica){			
+		    this.fisica = (PessoaFisica) pessoa;
+			setTipoPessoa('F');
+		}
+		else{
+			this.juridica = (PessoaJuridica) pessoa;
+			setTipoPessoa('J');
+		}
+		
+	}
 
 	/**
 	 * ****************************************

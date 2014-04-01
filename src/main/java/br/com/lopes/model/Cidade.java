@@ -2,6 +2,8 @@ package br.com.lopes.model;
 
 import java.util.List;
 
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -17,9 +19,11 @@ public class Cidade {
 	@Id @GeneratedValue(generator="cidadeGenerator")
 	private long id;
 	 
-	@Index(name="AK_CIDADE_NOME")
+	@Column(nullable=false)
+	@Index(name="AK_CIDADE_NOME")	
 	private String nome;
 	
+	@Column(nullable=false)
 	@Index(name="AK_CIDADE_ESTADO")
 	private String estado;
 
